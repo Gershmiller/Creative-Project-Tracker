@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Project Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Main Styles */
+        :root {
+            --dark-teal: #004d4d;
+            --medium-teal: #006666;
+            --light-teal: #008080;
+            --gold: #ffa500;
+            --bright-gold: #ffd700;
+            --dark-gold: #cc8400;
+            --text-light: #f0f0f0;
+            --text-dark: #333;
+            --bg-dark: #002626;
+            --bg-medium: #003333;
+            --bg-light: #004d4d;
+            --accent-1: #ff6b6b;
+            --accent-2: #4ecdc4;
+            --accent-3: #9d65c9;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        header {
+            background-color: var(--bg-medium);
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            margin-bottom: 0;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .btn {
+            background-color: var(--gold);
+            color: var(--text-dark);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn:hover {
+            background-color: var(--bright-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .card {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-body {
+            flex: 1;
+        }
+
+        .card-footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: var(--accent-2);
+            color: var(--text-dark);
+        }
+
+        .status-paused {
+            background-color: var(--gold);
+            color: var(--text-dark);
+        }
+
+        .status-dormant {
+            background-color: var(--accent-3);
+            color: var(--text-light);
+        }
+
+        .status-idea {
+            background-color: var(--bright-gold);
+            color: var(--text-dark);
+        }
+
+        .status-completed {
+            background-color: #4CAF50;
+            color: var(--text-light);
+        }
+
+        .status-abandoned {
+            background-color: var(--accent-1);
+            color: var(--text-light);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: var(--bg-medium);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px var(--shadow);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: var(--gold);
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--bright-gold);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        label {
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--bg-light);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.3);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background-color: var(--medium-teal);
+            color: var(--text-light);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .skill-tag {
+            background-color: var(--accent-2);
+            color: var(--text-dark);
+        }
+
+        .inspiration-tag {
+            background-color: var(--bright-gold);
+            color: var(--text-dark);
+        }
+
+        .roadblock-tag {
+            background-color: var(--accent-1);
+            color: var(--text-light);
+        }
+
+        .energy-level {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .energy-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        .energy-high {
+            background-color: #4CAF50;
+        }
+
+        .energy-medium {
+            background-color: var(--gold);
+        }
+
+        .energy-low {
+            background-color: var(--accent-1);
+        }
+
+        .energy-fluctuating {
+            background: linear-gradient(45deg, #4CAF50, var(--gold), var(--accent-1));
+        }
+
+        .energy-unknown {
+            background-color: var(--bg-medium);
+            border: 1px solid var(--text-light);
+        }
+
+        /* Skill Galaxy Styles */
+        #skillGalaxyContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-teal);
+            z-index: 2000;
+            display: none;
+            overflow: hidden;
+        }
+
+        .galaxy-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            z-index: 2001;
+        }
+
+        .galaxy-title {
+            font-size: 2rem;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+        }
+
+        /* Inspiration Capture Styles */
+        .inspiration-section {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .inspiration-item {
+            background-color: var(--bg-medium);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--gold);
+        }
+
+        /* Roadblock Visualizer Styles */
+        .roadblock-section {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .roadblock-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .roadblock-type {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .roadblock-type:hover {
+            transform: translateY(-2px);
+        }
+
+        .roadblock-type-technical {
+            background-color: var(--accent-2);
+            color: var(--text-dark);
+        }
+
+        .roadblock-type-creative {
+            background-color: var(--accent-3);
+            color: var(--text-light);
+        }
+
+        .roadblock-type-resource {
+            background-color: var(--gold);
+            color: var(--text-dark);
+        }
+
+        .roadblock-type-time {
+            background-color: var(--accent-1);
+            color: var(--text-light);
+        }
+
+        .roadblock-type-focus {
+            background-color: var(--bright-gold);
+            color: var(--text-dark);
+        }
+
+        .roadblock-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .roadblock-item {
+            background-color: var(--bg-medium);
+            border-radius: 6px;
+            padding: 1rem;
+            border-left: 4px solid;
+        }
+
+        .roadblock-item.technical {
+            border-color: var(--accent-2);
+        }
+
+        .roadblock-item.creative {
+            border-color: var(--accent-3);
+        }
+
+        .roadblock-item.resource {
+            border-color: var(--gold);
+        }
+
+        .roadblock-item.time {
+            border-color: var(--accent-1);
+        }
+
+        .roadblock-item.focus {
+            border-color: var(--bright-gold);
+        }
+
+        /* Energy Tracker Styles */
+        .energy-tracker {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .energy-chart {
+            height: 200px;
+            background-color: var(--bg-medium);
+            border-radius: 6px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .energy-bar {
+            position: absolute;
+            bottom: 0;
+            width: 30px;
+            background: linear-gradient(to top, #4CAF50, var(--gold), var(--accent-1));
+            border-radius: 3px 3px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .energy-label {
+            position: absolute;
+            bottom: -25px;
+            width: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            transform: rotate(-45deg);
+            transform-origin: top left;
+        }
+
+        /* Chaos Mode Styles */
+        .chaos-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            background-color: var(--accent-3);
+            color: var(--text-light);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .chaos-toggle:hover {
+            transform: translateY(-2px) rotate(5deg);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .chaos-mode main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chaos-mode .card {
+            transform: rotate(var(--rotation));
+            margin: var(--margin);
+            width: var(--width);
+            max-width: 500px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-controls {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            main {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Creative Project Tracker</h1>
+        <div class="header-controls">
+            <button id="newProjectBtn" class="btn">New Project</button>
+            <button id="skillGalaxyBtn" class="btn">Skill Galaxy</button>
+            <button id="exportDataBtn" class="btn">Export Data</button>
+            <button id="importDataBtn" class="btn">Import Data</button>
+        </div>
+    </header>
+
+    <main id="projectsContainer">
+        <!-- Projects will be dynamically added here -->
+    </main>
+
+    <!-- New Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">New Project</h2>
+            <form id="projectForm">
+                <input type="hidden" id="projectId">
+                <div class="form-group">
+                    <label for="projectTitle">Project Title</label>
+                    <input type="text" id="projectTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectStatus">Status</label>
+                        <select id="projectStatus">
+                            <option value="active">Active</option>
+                            <option value="paused">Paused</option>
+                            <option value="dormant">Dormant</option>
+                            <option value="idea">Idea</option>
+                            <option value="completed">Completed</option>
+                            <option value="abandoned">Abandoned</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="energyLevel">Energy Level</label>
+                        <select id="energyLevel">
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                            <option value="fluctuating">Fluctuating</option>
+                            <option value="unknown">Unknown</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="projectSkills">Skills (comma separated)</label>
+                    <input type="text" id="projectSkills" placeholder="AI, Design, Coding, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="projectRoadblocks">Roadblocks</label>
+                    <select id="roadblockType">
+                        <option value="technical">Technical Learning</option>
+                        <option value="creative">Creative Block</option>
+                        <option value="resource">Resource Limitation</option>
+                        <option value="time">Time Constraint</option>
+                        <option value="focus">Focus Challenge</option>
+                    </select>
+                    <input type="text" id="roadblockDescription" placeholder="Describe the roadblock">
+                    <button type="button" id="addRoadblockBtn" class="btn">Add Roadblock</button>
+                    <div id="roadblocksList"></div>
+                </div>
+                <div class="form-group">
+                    <label for="projectResources">Learning Resources</label>
+                    <textarea id="projectResources" placeholder="Links, books, courses, etc."></textarea>
+                </div>
+                <button type="submit" class="btn">Save Project</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inspiration Modal -->
+    <div id="inspirationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Capture Inspiration</h2>
+            <form id="inspirationForm">
+                <div class="form-group">
+                    <label for="inspirationTitle">Title</label>
+                    <input type="text" id="inspirationTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="inspirationDescription">Description</label>
+                    <textarea id="inspirationDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="relatedProject">Related Project (optional)</label>
+                    <select id="relatedProject">
+                        <option value="">None</option>
+                        <!-- Projects will be dynamically added here -->
+                    </select>
+                </div>
+                <button type="submit" class="btn">Save Inspiration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Skill Galaxy View -->
+    <div id="skillGalaxyContainer">
+        <div class="galaxy-header">
+            <h2 class="galaxy-title">Skill Galaxy</h2>
+            <button id="closeGalaxyBtn" class="btn">Close Galaxy</button>
+        </div>
+        <canvas id="galaxyCanvas"></canvas>
+    </div>
+
+    <!-- Inspiration Section -->
+    <div id="inspirationSection" class="inspiration-section">
+        <h2>Inspiration Capture</h2>
+        <p>Capture spontaneous ideas and creative tangents as they occur</p>
+        <button id="newInspirationBtn" class="btn">New Inspiration</button>
+        <div id="inspirationsContainer">
+            <!-- Inspirations will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Roadblock Visualizer -->
+    <div id="roadblockSection" class="roadblock-section">
+        <h2>Roadblock Visualizer</h2>
+        <p>Identify and track different types of roadblocks in your creative journey</p>
+        <div class="roadblock-types">
+            <h4>Roadblock Types</h4>
+            <div class="roadblock-type roadblock-type-technical">Technical Learning</div>
+            <div class="roadblock-type roadblock-type-creative">Creative Block</div>
+            <div class="roadblock-type roadblock-type-resource">Resource Limitation</div>
+            <div class="roadblock-type roadblock-type-time">Time Constraint</div>
+            <div class="roadblock-type roadblock-type-focus">Focus Challenge</div>
+        </div>
+        <div id="roadblocksContainer" class="roadblock-items">
+            <!-- Roadblocks will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Energy Tracker -->
+    <div id="energyTrackerSection" class="energy-tracker">
+        <h2>Energy Tracker</h2>
+        <p>Monitor your creative energy levels across projects</p>
+        <div id="energyChartContainer" class="energy-chart">
+            <!-- Energy bars will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Chaos Mode Toggle -->
+    <button id="chaosModeBtn" class="chaos-toggle">Toggle Chaos Mode</button>
+
+    <script>
+        // Main Application Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const projectsContainer = document.getElementById('projectsContainer');
+            const projectModal = document.getElementById('projectModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const projectForm = document.getElementById('projectForm');
+            const newProjectBtn = document.getElementById('newProjectBtn');
+            const closeButtons = document.querySelectorAll('.close');
+            const exportDataBtn = document.getElementById('exportDataBtn');
+            const importDataBtn = document.getElementById('importDataBtn');
+            const skillGalaxyBtn = document.getElementById('skillGalaxyBtn');
+            const skillGalaxyContainer = document.getElementById('skillGalaxyContainer');
+            const closeGalaxyBtn = document.getElementById('closeGalaxyBtn');
+            const galaxyCanvas = document.getElementById('galaxyCanvas');
+            const inspirationModal = document.getElementById('inspirationModal');
+            const inspirationForm = document.getElementById('inspirationForm');
+            const newInspirationBtn = document.getElementById('newInspirationBtn');
+            const inspirationsContainer = document.getElementById('inspirationsContainer');
+            const relatedProjectSelect = document.getElementById('relatedProject');
+            const roadblocksList = document.getElementById('roadblocksList');
+            const addRoadblockBtn = document.getElementById('addRoadblockBtn');
+            const roadblocksContainer = document.getElementById('roadblocksContainer');
+            const energyChartContainer = document.getElementById('energyChartContainer');
+            const chaosModeBtn = document.getElementById('chaosModeBtn');
+
+            // State
+            let projects = [];
+            let inspirations = [];
+            let roadblocks = [];
+            let currentProjectId = null;
+            let tempRoadblocks = [];
+            let chaosMode = false;
+
+            // Initialize
+            loadData();
+            renderProjects();
+            renderInspirations();
+            renderRoadblocks();
+            updateEnergyChart();
+            updateSkillGalaxy();
+
+            // Event Listeners
+            newProjectBtn.addEventListener('click', openNewProjectModal);
+            projectForm.addEventListener('submit', saveProject);
+            closeButtons.forEach(btn => btn.addEventListener('click', closeModals));
+            exportDataBtn.addEventListener('click', exportData);
+            importDataBtn.addEventListener('click', importData);
+            skillGalaxyBtn.addEventListener('click', openSkillGalaxy);
+            closeGalaxyBtn.addEventListener('click', closeSkillGalaxy);
+            newInspirationBtn.addEventListener('click', openInspirationModal);
+            inspirationForm.addEventListener('submit', saveInspiration);
+            addRoadblockBtn.addEventListener('click', addTempRoadblock);
+            chaosModeBtn.addEventListener('click', toggleChaosMode);
+
+            // Window resize event for responsive canvas
+            window.addEventListener('resize', function() {
+                if (skillGalaxyContainer.style.display === 'block') {
+                    updateSkillGalaxy();
+                }
+            });
+
+            // Functions
+            function loadData() {
+                const savedProjects = localStorage.getItem('projects');
+                const savedInspirations = localStorage.getItem('inspirations');
+                const savedRoadblocks = localStorage.getItem('roadblocks');
+                const savedChaosMode = localStorage.getItem('chaosMode');
+
+                if (savedProjects) {
+                    projects = JSON.parse(savedProjects);
+                }
+
+                if (savedInspirations) {
+                    inspirations = JSON.parse(savedInspirations);
+                }
+
+                if (savedRoadblocks) {
+                    roadblocks = JSON.parse(savedRoadblocks);
+                }
+
+                if (savedChaosMode) {
+                    chaosMode = JSON.parse(savedChaosMode);
+                    if (chaosMode) {
+                        document.body.classList.add('chaos-mode');
+                    }
+                }
+            }
+
+            function saveData() {
+                localStorage.setItem('projects', JSON.stringify(projects));
+                localStorage.setItem('inspirations', JSON.stringify(inspirations));
+                localStorage.setItem('roadblocks', JSON.stringify(roadblocks));
+                localStorage.setItem('chaosMode', JSON.stringify(chaosMode));
+            }
+
+            function renderProjects() {
+                projectsContainer.innerHTML = '';
+                
+                if (projects.length === 0) {
+                    projectsContainer.innerHTML = '<div class="card"><h3>No Projects Yet</h3><p>Click "New Project" to get started on your creative journey!</p></div>';
+                    return;
+                }
+
+                projects.forEach(project => {
+                    const projectCard = document.createElement('div');
+                    projectCard.className = 'card';
+                    
+                    if (chaosMode) {
+                        const rotation = Math.random() * 10 - 5;
+                        const margin = `${Math.random() * 2}rem`;
+                        const width = `${Math.random() * 20 + 80}%`;
+                        
+                        projectCard.style.setProperty('--rotation', `${rotation}deg`);
+                        projectCard.style.setProperty('--margin', margin);
+                        projectCard.style.setProperty('--width', width);
+                    }
+
+                    const projectSkillsHTML = project.skills.map(skill => 
+                        `<span class="tag skill-tag">${skill}</span>`
+                    ).join('');
+
+                    const projectRoadblocksHTML = roadblocks
+                        .filter(rb => rb.projectId === project.id)
+                        .map(rb => `<span class="tag roadblock-tag">${rb.type}: ${rb.description}</span>`)
+                        .join('');
+
+                    const relatedInspirationsHTML = inspirations
+                        .filter(insp => insp.relatedProjectId === project.id)
+                        .map(insp => `<span class="tag inspiration-tag">${insp.title}</span>`)
+                        .join('');
+
+                    projectCard.innerHTML = `
+                        <div class="card-header">
+                            <h3>${project.title}</h3>
+                            <span class="status status-${project.status}">${project.status}</span>
+                        </div>
+                        <div class="card-body">
+                            <p>${project.description}</p>
+                            <div class="energy-level">
+                                <div class="energy-indicator energy-${project.energyLevel}"></div>
+                                <span>Energy: ${project.energyLevel}</span>
+                            </div>
+                            <div class="skills-container">
+                                ${projectSkillsHTML}
+                            </div>
+                            ${projectRoadblocksHTML ? `
+                                <div class="roadblocks-container">
+                                    <h4>Roadblocks:</h4>
+                                    ${projectRoadblocksHTML}
+                                </div>
+                            ` : ''}
+                            ${relatedInspirationsHTML ? `
+                                <div class="inspirations-container">
+                                    <h4>Inspirations:</h4>
+                                    ${relatedInspirationsHTML}
+                                </div>
+                            ` : ''}
+                            ${project.resources ? `
+                                <div class="resources-container">
+                                    <h4>Resources:</h4>
+                                    <p>${project.resources}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn edit-btn" data-id="${project.id}">Edit</button>
+                            <button class="btn delete-btn" data-id="${project.id}">Delete</button>
+                        </div>
+                    `;
+
+                    projectsContainer.appendChild(projectCard);
+                });
+
+                // Add event listeners to edit and delete buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const projectId = this.getAttribute('data-id');
+                        openEditProjectModal(projectId);
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const projectId = this.getAttribute('data-id');
+                        deleteProject(projectId);
+                    });
+                });
+            }
+
+            function openNewProjectModal() {
+                modalTitle.textContent = 'New Project';
+                projectForm.reset();
+                document.getElementById('projectId').value = '';
+                currentProjectId = null;
+                tempRoadblocks = [];
+                roadblocksList.innerHTML = '';
+                projectModal.style.display = 'block';
+            }
+
+            function openEditProjectModal(projectId) {
+                const project = projects.find(p => p.id === projectId);
+                if (!project) return;
+
+                modalTitle.textContent = 'Edit Project';
+                document.getElementById('projectId').value = project.id;
+                document.getElementById('projectTitle').value = project.title;
+                document.getElementById('projectDescription').value = project.description;
+                document.getElementById('projectStatus').value = project.status;
+                document.getElementById('energyLevel').value = project.energyLevel;
+                document.getElementById('projectSkills').value = project.skills.join(', ');
+                document.getElementById('projectResources').value = project.resources || '';
+
+                currentProjectId = project.id;
+                tempRoadblocks = [...roadblocks.filter(rb => rb.projectId === project.id)];
+                
+                renderTempRoadblocks();
+                projectModal.style.display = 'block';
+            }
+
+            function saveProject(e) {
+                e.preventDefault();
+                
+                const projectId = document.getElementById('projectId').value || generateId();
+                const title = document.getElementById('projectTitle').value;
+                const description = document.getElementById('projectDescription').value;
+                const status = document.getElementById('projectStatus').value;
+                const energyLevel = document.getElementById('energyLevel').value;
+                const skillsInput = document.getElementById('projectSkills').value;
+                const resources = document.getElementById('projectResources').value;
+                
+                const skills = skillsInput.split(',')
+                    .map(skill => skill.trim())
+                    .filter(skill => skill !== '');
+
+                const project = {
+                    id: projectId,
+                    title,
+                    description,
+                    status,
+                    energyLevel,
+                    skills,
+                    resources
+                };
+
+                const existingIndex = projects.findIndex(p => p.id === projectId);
+                if (existingIndex !== -1) {
+                    projects[existingIndex] = project;
+                } else {
+                    projects.push(project);
+                }
+
+                // Handle roadblocks
+                if (currentProjectId) {
+                    // Remove existing roadblocks for this project
+                    roadblocks = roadblocks.filter(rb => rb.projectId !== currentProjectId);
+                }
+                
+                // Add temp roadblocks to the main roadblocks array
+                roadblocks = [...roadblocks, ...tempRoadblocks];
+
+                saveData();
+                renderProjects();
+                renderRoadblocks();
+                updateEnergyChart();
+                updateSkillGalaxy();
+                closeModals();
+            }
+
+            function deleteProject(projectId) {
+                if (confirm('Are you sure you want to delete this project?')) {
+                    projects = projects.filter(p => p.id !== projectId);
+                    roadblocks = roadblocks.filter(rb => rb.projectId !== projectId);
+                    
+                    // Update related inspirations
+                    inspirations = inspirations.map(insp => {
+                        if (insp.relatedProjectId === projectId) {
+                            return { ...insp, relatedProjectId: null };
+                        }
+                        return insp;
+                    });
+                    
+                    saveData();
+                    renderProjects();
+                    renderInspirations();
+                    renderRoadblocks();
+                    updateEnergyChart();
+                    updateSkillGalaxy();
+                }
+            }
+
+            function closeModals() {
+                projectModal.style.display = 'none';
+                inspirationModal.style.display = 'none';
+            }
+
+            function exportData() {
+                const data = {
+                    projects,
+                    inspirations,
+                    roadblocks
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'creative-project-tracker-data.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+
+            function importData() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            
+                            if (data.projects && Array.isArray(data.projects)) {
+                                projects = data.projects;
+                            }
+                            
+                            if (data.inspirations && Array.isArray(data.inspirations)) {
+                                inspirations = data.inspirations;
+                            }
+                            
+                            if (data.roadblocks && Array.isArray(data.roadblocks)) {
+                                roadblocks = data.roadblocks;
+                            }
+                            
+                            saveData();
+                            renderProjects();
+                            renderInspirations();
+                            renderRoadblocks();
+                            updateEnergyChart();
+                            updateSkillGalaxy();
+                            
+                            alert('Data imported successfully!');
+                        } catch (error) {
+                            alert('Error importing data: ' + error.message);
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            }
+
+            function generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            }
+
+            function openSkillGalaxy() {
+                skillGalaxyContainer.style.display = 'block';
+                updateSkillGalaxy();
+            }
+
+            function closeSkillGalaxy() {
+                skillGalaxyContainer.style.display = 'none';
+            }
+
+            function updateSkillGalaxy() {
+                const canvas = galaxyCanvas;
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                // Extract all unique skills
+                const allSkills = new Set();
+                projects.forEach(project => {
+                    project.skills.forEach(skill => allSkills.add(skill));
+                });
+                
+                const skills = Array.from(allSkills);
+                
+                // Create nodes for skills
+                const nodes = skills.map((skill, index) => {
+                    const angle = (index / skills.length) * Math.PI * 2;
+                    const radius = Math.min(canvas.width, canvas.height) * 0.35;
+                    
+                    return {
+                        id: skill,
+                        x: canvas.width / 2 + Math.cos(angle) * radius,
+                        y: canvas.height / 2 + Math.sin(angle) * radius,
+                        radius: 30,
+                        color: getRandomColor(),
+                        connections: []
+                    };
+                });
+                
+                // Create connections between skills based on projects
+                projects.forEach(project => {
+                    for (let i = 0; i < project.skills.length; i++) {
+                        for (let j = i + 1; j < project.skills.length; j++) {
+                            const skill1 = project.skills[i];
+                            const skill2 = project.skills[j];
+                            
+                            const node1 = nodes.find(node => node.id === skill1);
+                            const node2 = nodes.find(node => node.id === skill2);
+                            
+                            if (node1 && node2) {
+                                if (!node1.connections.includes(node2)) {
+                                    node1.connections.push(node2);
+                                }
+                                if (!node2.connections.includes(node1)) {
+                                    node2.connections.push(node1);
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw connections
+                ctx.lineWidth = 2;
+                nodes.forEach(node => {
+                    node.connections.forEach(connectedNode => {
+                        ctx.beginPath();
+                        ctx.moveTo(node.x, node.y);
+                        ctx.lineTo(connectedNode.x, connectedNode.y);
+                        ctx.strokeStyle = 'rgba(255, 165, 0, 0.3)';
+                        ctx.stroke();
+                    });
+                });
+                
+                // Draw nodes
+                nodes.forEach(node => {
+                    // Draw node
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = node.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw label
+                    ctx.font = '14px Montserrat';
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(node.id, node.x, node.y);
+                });
+                
+                // Draw projects as smaller nodes connected to their skills
+                projects.forEach(project => {
+                    const projectX = canvas.width / 2 + (Math.random() - 0.5) * 200;
+                    const projectY = canvas.height / 2 + (Math.random() - 0.5) * 200;
+                    
+                    // Draw connections to skills
+                    project.skills.forEach(skillId => {
+                        const skillNode = nodes.find(node => node.id === skillId);
+                        if (skillNode) {
+                            ctx.beginPath();
+                            ctx.moveTo(projectX, projectY);
+                            ctx.lineTo(skillNode.x, skillNode.y);
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    });
+                    
+                    // Draw project node
+                    ctx.beginPath();
+                    ctx.arc(projectX, projectY, 15, 0, Math.PI * 2);
+                    ctx.fillStyle = getStatusColor(project.status);
+                    ctx.fill();
+                    
+                    // Draw project title
+                    ctx.font = '12px Montserrat';
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(project.title, projectX, projectY);
+                });
+            }
+
+            function getRandomColor() {
+                const colors = [
+                    'rgba(78, 205, 196, 0.8)',  // Teal
+                    'rgba(255, 107, 107, 0.8)', // Coral
+                    'rgba(255, 180, 0, 0.8)',   // Gold
+                    'rgba(157, 101, 201, 0.8)', // Purple
+                    'rgba(76, 175, 80, 0.8)'    // Green
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            function getStatusColor(status) {
+                const colors = {
+                    active: 'rgba(78, 205, 196, 0.8)',
+                    paused: 'rgba(255, 165, 0, 0.8)',
+                    dormant: 'rgba(157, 101, 201, 0.8)',
+                    idea: 'rgba(255, 215, 0, 0.8)',
+                    completed: 'rgba(76, 175, 80, 0.8)',
+                    abandoned: 'rgba(255, 107, 107, 0.8)'
+                };
+                return colors[status] || 'rgba(255, 255, 255, 0.8)';
+            }
+
+            function openInspirationModal() {
+                inspirationForm.reset();
+                
+                // Populate related project dropdown
+                relatedProjectSelect.innerHTML = '<option value="">None</option>';
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.title;
+                    relatedProjectSelect.appendChild(option);
+                });
+                
+                inspirationModal.style.display = 'block';
+            }
+
+            function saveInspiration(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('inspirationTitle').value;
+                const description = document.getElementById('inspirationDescription').value;
+                const relatedProjectId = document.getElementById('relatedProject').value || null;
+                
+                const inspiration = {
+                    id: generateId(),
+                    title,
+                    description,
+                    relatedProjectId,
+                    timestamp: new Date().toISOString()
+                };
+                
+                inspirations.push(inspiration);
+                saveData();
+                renderInspirations();
+                
+                if (relatedProjectId) {
+                    renderProjects(); // Update project cards to show related inspirations
+                }
+                
+                closeModals();
+            }
+
+            function renderInspirations() {
+                inspirationsContainer.innerHTML = '';
+                
+                if (inspirations.length === 0) {
+                    inspirationsContainer.innerHTML = '<p>No inspirations captured yet. Click "New Inspiration" to add one!</p>';
+                    return;
+                }
+                
+                // Sort inspirations by timestamp (newest first)
+                const sortedInspirations = [...inspirations].sort((a, b) => 
+                    new Date(b.timestamp) - new Date(a.timestamp)
+                );
+                
+                sortedInspirations.forEach(inspiration => {
+                    const relatedProject = inspiration.relatedProjectId 
+                        ? projects.find(p => p.id === inspiration.relatedProjectId)
+                        : null;
+                    
+                    const inspirationItem = document.createElement('div');
+                    inspirationItem.className = 'inspiration-item';
+                    inspirationItem.innerHTML = `
+                        <h3>${inspiration.title}</h3>
+                        <p>${inspiration.description}</p>
+                        ${relatedProject ? `<p><strong>Related to:</strong> ${relatedProject.title}</p>` : ''}
+                        <p><small>Captured: ${new Date(inspiration.timestamp).toLocaleString()}</small></p>
+                        <button class="btn delete-inspiration-btn" data-id="${inspiration.id}">Delete</button>
+                    `;
+                    
+                    inspirationsContainer.appendChild(inspirationItem);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-inspiration-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const inspirationId = this.getAttribute('data-id');
+                        deleteInspiration(inspirationId);
+                    });
+                });
+            }
+
+            function deleteInspiration(inspirationId) {
+                if (confirm('Are you sure you want to delete this inspiration?')) {
+                    inspirations = inspirations.filter(insp => insp.id !== inspirationId);
+                    saveData();
+                    renderInspirations();
+                    renderProjects(); // Update project cards to remove references
+                }
+            }
+
+            function addTempRoadblock() {
+                const type = document.getElementById('roadblockType').value;
+                const description = document.getElementById('roadblockDescription').value;
+                
+                if (!description) {
+                    alert('Please enter a roadblock description');
+                    return;
+                }
+                
+                const roadblock = {
+                    id: generateId(),
+                    projectId: currentProjectId || null,
+                    type,
+                    description
+                };
+                
+                tempRoadblocks.push(roadblock);
+                document.getElementById('roadblockDescription').value = '';
+                renderTempRoadblocks();
+            }
+
+            function renderTempRoadblocks() {
+                roadblocksList.innerHTML = '';
+                
+                if (tempRoadblocks.length === 0) {
+                    return;
+                }
+                
+                tempRoadblocks.forEach(roadblock => {
+                    const roadblockItem = document.createElement('div');
+                    roadblockItem.className = `tag roadblock-tag ${roadblock.type}`;
+                    roadblockItem.innerHTML = `
+                        ${roadblock.type}: ${roadblock.description}
+                        <span class="remove-roadblock" data-id="${roadblock.id}">&times;</span>
+                    `;
+                    
+                    roadblocksList.appendChild(roadblockItem);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-roadblock').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const roadblockId = this.getAttribute('data-id');
+                        removeTempRoadblock(roadblockId);
+                    });
+                });
+            }
+
+            function removeTempRoadblock(roadblockId) {
+                tempRoadblocks = tempRoadblocks.filter(rb => rb.id !== roadblockId);
+                renderTempRoadblocks();
+            }
+
+            function renderRoadblocks() {
+                roadblocksContainer.innerHTML = '';
+                
+                if (roadblocks.length === 0) {
+                    roadblocksContainer.innerHTML = '<p>No roadblocks identified yet. Add your first one above!</p>';
+                    return;
+                }
+                
+                // Group roadblocks by type
+                const roadblocksByType = {};
+                roadblocks.forEach(roadblock => {
+                    if (!roadblocksByType[roadblock.type]) {
+                        roadblocksByType[roadblock.type] = [];
+                    }
+                    roadblocksByType[roadblock.type].push(roadblock);
+                });
+                
+                // Render roadblocks by type
+                Object.keys(roadblocksByType).forEach(type => {
+                    roadblocksByType[type].forEach(roadblock => {
+                        const project = projects.find(p => p.id === roadblock.projectId);
+                        
+                        const roadblockItem = document.createElement('div');
+                        roadblockItem.className = `roadblock-item ${type}`;
+                        roadblockItem.innerHTML = `
+                            <h4>${roadblock.description}</h4>
+                            ${project ? `<p><strong>Project:</strong> ${project.title}</p>` : ''}
+                        `;
+                        
+                        roadblocksContainer.appendChild(roadblockItem);
+                    });
+                });
+            }
+
+            function updateEnergyChart() {
+                energyChartContainer.innerHTML = '';
+                
+                if (projects.length === 0) {
+                    energyChartContainer.innerHTML = '<p>No projects to display energy levels for.</p>';
+                    return;
+                }
+                
+                // Group projects by energy level
+                const energyLevels = ['high', 'medium', 'low', 'fluctuating', 'unknown'];
+                const projectsByEnergy = {};
+                
+                energyLevels.forEach(level => {
+                    projectsByEnergy[level] = projects.filter(p => p.energyLevel === level);
+                });
+                
+                // Calculate bar width based on container width and number of energy levels
+                const barWidth = energyChartContainer.clientWidth / (energyLevels.length * 2);
+                
+                // Create bars for each energy level
+                energyLevels.forEach((level, index) => {
+                    const count = projectsByEnergy[level].length;
+                    if (count === 0) return;
+                    
+                    const barHeight = Math.min(count * 40, energyChartContainer.clientHeight * 0.9);
+                    
+                    const bar = document.createElement('div');
+                    bar.className = `energy-bar energy-${level}`;
+                    bar.style.height = `${barHeight}px`;
+                    bar.style.width = `${barWidth}px`;
+                    bar.style.left = `${index * (barWidth * 2) + barWidth / 2}px`;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'energy-label';
+                    label.textContent = `${level} (${count})`;
+                    label.style.left = `${index * (barWidth * 2) + barWidth / 2}px`;
+                    
+                    energyChartContainer.appendChild(bar);
+                    energyChartContainer.appendChild(label);
+                });
+            }
+
+            function toggleChaosMode() {
+                chaosMode = !chaosMode;
+                document.body.classList.toggle('chaos-mode', chaosMode);
+                saveData();
+                renderProjects();
+            }
+        });
+    </script>
+</body>
+</html>

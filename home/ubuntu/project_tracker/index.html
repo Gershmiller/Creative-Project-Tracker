@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Project Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Creative Project Tracker</h1>
+        <div class="header-controls">
+            <button id="newProjectBtn" class="btn">New Project</button>
+            <button id="skillGalaxyBtn" class="btn">Skill Galaxy</button>
+            <button id="exportDataBtn" class="btn">Export Data</button>
+            <button id="importDataBtn" class="btn">Import Data</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="welcomeMessage">
+            <h2>Welcome to your Creative Journey</h2>
+            <p>This tracker is designed specifically for neurodiverse creatives and non-linear thinkers navigating the intersection of AI tools and creative software.</p>
+            <p>Map your interconnected creative journeys, document your learning resources, and visualize your skill development in a way that works with your unique thought processes.</p>
+        </div>
+
+        <div class="dashboard-controls">
+            <div id="energyTrackerContainer"></div>
+        </div>
+
+        <div id="dashboard" class="dashboard">
+            <!-- Projects will be dynamically added here -->
+        </div>
+
+        <div class="feature-sections">
+            <div class="feature-section">
+                <div id="inspirationCaptureContainer"></div>
+            </div>
+            <div class="feature-section">
+                <div id="roadblockVisualizerContainer"></div>
+            </div>
+        </div>
+
+        <!-- Project Modal -->
+        <div id="projectModal" class="modal hidden">
+            <!-- Project form will be added here -->
+        </div>
+
+        <!-- Skill Galaxy View -->
+        <div id="skillGalaxyView" class="hidden">
+            <!-- Skill visualization will be added here -->
+        </div>
+    </main>
+
+    <!-- JavaScript Files -->
+    <script src="js/skillGalaxy.js"></script>
+    <script src="js/energyTracker.js"></script>
+    <script src="js/inspirationCapture.js"></script>
+    <script src="js/roadblockVisualizer.js"></script>
+    <script src="js/chaosMode.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create component instances
+            window.skillGalaxy = new SkillGalaxy('skillGalaxyView');
+            window.energyTracker = new EnergyTracker('energyTrackerContainer');
+            window.inspirationCapture = new InspirationCapture('inspirationCaptureContainer');
+            window.roadblockVisualizer = new RoadblockVisualizer('roadblockVisualizerContainer');
+            window.chaosMode = new ChaosMode();
+            
+            // Initialize the main application
+            window.app = new CreativeProjectTracker();
+            
+            // Set up event listeners
+            document.getElementById('skillGalaxyBtn').addEventListener('click', function() {
+                window.skillGalaxy.show(window.app.skills, window.app.projects);
+            });
+            
+            console.log('Creative Project Tracker initialized');
+        });
+    </script>
+</body>
+</html>
